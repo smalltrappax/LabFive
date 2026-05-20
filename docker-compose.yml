@@ -1,0 +1,19 @@
+services:
+  search:
+    build: .
+    image: igpodik-lab5-search
+    volumes:
+      - ./data:/app/data
+    working_dir: /app
+    profiles:
+      - tools
+
+  web:
+    build: .
+    image: igpodik-lab5-web
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    working_dir: /app
+    command: ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501"]
