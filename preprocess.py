@@ -10,12 +10,15 @@
 """
 # Сори если не работает я тестил на mock данных :)
 
+from __future__ import annotations
+
 import argparse
 import csv
 import json
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 def tokenize(text: str) -> list[str]:
@@ -24,7 +27,7 @@ def tokenize(text: str) -> list[str]:
     return [w for w in text.split() if len(w) > 2]
 
 
-def preprocess(input_path: Path, output_path: Path, limit: int | None) -> None:
+def preprocess(input_path: Path, output_path: Path, limit: Optional[int]) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     count = 0

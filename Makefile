@@ -1,10 +1,16 @@
 CC     = gcc
 CFLAGS = -Wall -Wextra -std=c11 -O2 -g -I.
+ifneq ($(OS),Windows_NT)
+  UNAME_S := $(shell uname -s)
+  ifeq ($(UNAME_S),Linux)
+    CFLAGS += -D_POSIX_C_SOURCE=200809L
+  endif
+endif
 
 ifeq ($(OS),Windows_NT)
 PYTHON ?= python
 else
-PYTHON ?= python3
+PYTHON ?= $(shell command -v python3.12 || command -v python3.11 || command -v python3)
 endif
 
 VECTOR_OBJ = lab3/vector/generic.o
