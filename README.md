@@ -4,6 +4,110 @@
 
 ---
 
+## 0. Быстрый запуск
+
+> **Все команды ниже выполняются из корня проекта** (папка `LabFive`, где лежат `Makefile`, `main.c`, `preprocess.py`, `./app`).
+> Не заходите в `data/` перед запуском — иначе `./app` и `preprocess.py` не найдутся.
+
+### Требования
+
+| Компонент | Минимум |
+|-----------|---------|
+| C | `gcc`, `make` |
+| Python | 3.10+ (`python3.11` или `python3.12`; системный `python3` на macOS часто 3.9 — не подходит для `preprocess.py`) |
+| Docker (опционально) | Docker Desktop + `docker compose` — для веб-интерфейса |
+
+### Шаг 1. Перейти в проект и собрать
+
+```bash
+cd "/путь/к/LabFive"
+
+make clean && make
+make test
+```
+
+Ожидаемый результат: `=== E2E OK ===` (тесты на мини-наборе `data/test/`).
+
+### Шаг 2. Подготовить полный датасет (для демо на защите)
+
+Скачайте [Stack Overflow stacksample](https://www.kaggle.com/datasets/stackoverflow/stacksample) и положите архив в `data/`, либо используйте уже лежащий `data/Questions.csv.zip`.
+
+```bash
+unzip -o data/Questions.csv.zip -d data
+
+python3.11 preprocess.py \
+  --input data/Questions.csv \
+  --output data/processed/docs.jsonl \
+  --limit 50000
+```
+
+Препроцессинг 50 000 документов может занять несколько минут.
+
+### Шаг 3. Построить индексы
+
+```bash
+./app index --type=avl
+./app index --type=rb
+./app index --type=btree
+```
+
+Появятся файлы `data/index_avl.txt`, `data/index_rb.txt`, `data/index_btree.txt`.
+
+### Шаг 4. Поиск из терминала
+
+```bash
+./app search --type=avl --json "python list sort"
+./app fuzzysearch --type=avl --dist=2 --json "pythn list"
+./app bench --type=avl --limit=5000 --queries=1000
+```
+
+На macOS в `bench` поле `rss_kb=-1` — нормально (память считается только на Linux).
+
+### Шаг 5. Веб-интерфейс (Streamlit)
+
+**Вариант A — Docker (рекомендуется):**
+
+```bash
+docker compose build web
+docker compose up web
+```
+
+Откройте http://localhost:8501. Остановить: `docker compose down`.
+
+**Вариант B — локально:**
+
+```bash
+python3.11 -m pip install streamlit
+streamlit run app.py
+```
+
+Для UI нужны готовые индексы `data/index_*.txt` (шаг 3). Если полный датасет не готов, можно временно скопировать тестовые:
+
+```bash
+cp data/test/idx_avl.txt data/index_avl.txt
+cp data/test/idx_rb.txt data/index_rb.txt
+cp data/test/idx_btree.txt data/index_btree.txt
+```
+
+**CLI внутри Docker:**
+
+```bash
+docker compose --profile tools run --rm search \
+  ./app search --type=avl --index=data/test/idx_avl.txt --json "python list"
+```
+
+### Частые ошибки
+
+| Ошибка | Причина | Решение |
+|--------|---------|---------|
+| `No rule to make target '#'` | В zsh комментарий `# ...` в конце строки не игнорируется | Не пишите комментарии в той же строке, что и `make` |
+| `can't open file '.../data/preprocess.py'` | Вы в папке `data/`, а не в корне | `cd ..` или `cd "/путь/к/LabFive"` |
+| `no such file or directory: ./app` | То же — не из корня проекта | Запускайте `./app` из `LabFive/` |
+| `Failed to load index` | Нет файла индекса | Сначала `./app index --type=...` или скопируйте из `data/test/` |
+| `TypeError: unsupported operand type(s) for \|` | Python 3.9 | Используйте `python3.11` или `python3.12` |
+
+---
+
 ## 1. Структура проекта
 
 ```
@@ -186,7 +290,7 @@ posting.c → lab3/vector/generic.c
 
 #### `Dockerfile` / `docker-compose.yml`
 
-**Dockerfile:** Debian slim → `gcc`, `make`, `python3-venv` → `make app` → venv со Streamlit.
+**Dockerfile:** Debian slim → `build-essential`, `python3-venv` → `make app` → venv со Streamlit.
 
 **docker-compose:**
 
@@ -389,11 +493,19 @@ END
 
 ## 3. Сборка и проверка
 
-```bash
+Краткая шпаргалка (подробнее — раздел **0. Быстрый запуск** выше):
 
-make              # app + unit tests
-make test         # e2e на data/test/
-python preprocess.py --input data/Questions.csv --output data/processed/docs.jsonl --limit 50000
+```bash
+make
+make test
+
+unzip -o data/Questions.csv.zip -d data
+python3.11 preprocess.py --input data/Questions.csv --output data/processed/docs.jsonl --limit 50000
+
 ./app index --type=avl
-./app search --type=avl "python list"
+./app index --type=rb
+./app index --type=btree
+
+./app search --type=avl --json "python list sort"
+docker compose up web
 ```
