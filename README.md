@@ -390,7 +390,7 @@ END
 ## 3. Сборка и проверка
 
 ```bash
-cd igpodik_lab5
+
 make              # app + unit tests
 make test         # e2e на data/test/
 python preprocess.py --input data/Questions.csv --output data/processed/docs.jsonl --limit 50000
