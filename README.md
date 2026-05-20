@@ -8,41 +8,41 @@
 
 ```
 igpodik_lab5/
-├── README.md              # ТЗ лабораторной (исходное задание)
-├── DOCUMENTATION.md       # Этот файл — описание кода и вопросы к защите
-├── REPORT.md              # Шаблон таблиц экспериментов
-├── Makefile               # Сборка C, тесты, e2e
-├── main.c                 # CLI: index / search / fuzzysearch / bench
-├── posting.h, posting.c   # Posting list (обёртка над Vector)
-├── preprocess.py          # Препроцессинг CSV → JSONL
-├── app.py                 # Streamlit UI
+├── README.md              
+├── DOCUMENTATION.md       
+├── REPORT.md              
+├── Makefile               
+├── main.c                 
+├── posting.h, posting.c   
+├── preprocess.py
+├── app.py                 
 ├── Dockerfile, docker-compose.yml
 │
-├── avl/                   # AVL-дерево
+├── avl/                   
 │   ├── avl.h, avl.c
 │   └── tests.c
-├── rbtree/                # Red-Black дерево
+├── rbtree/                
 │   ├── rbtree.h, rbtree.c
 │   └── tests.c
-├── btree/                 # B-tree (t = 3)
+├── btree/                 
 │   ├── btree.h, btree.c
 │   └── tests.c
-├── index/                 # Обёртка индекса + поиск
+├── index/                 
 │   ├── index.h, index.c
 │   └── search.h, search.c
 │
-├── lab3/vector/           # Универсальный Vector (лаб. 3), используется в posting
+├── lab3/vector/           
 │   ├── generic.h, generic.c
 │   └── comparators.h (в lab3/)
 │
-├── data/                  # Данные (не в git для больших CSV)
+├── data/                  
 │   ├── README.md
-│   ├── Questions.csv      # Kaggle (локально)
+│   ├── Questions.csv      
 │   ├── processed/docs.jsonl
 │   ├── index_avl.txt, index_rb.txt, index_btree.txt
-│   └── test/              # Мини-набор для make test
+│   └── test/              
 │
-├── lab4/, graph/          # Код других лаб, в сборку app не входит
+├── lab4/, graph/          
 └── .gitignore
 ```
 
